@@ -2,10 +2,10 @@
 
 let mongoose = require('mongoose')
 let _ = require('lodash')
-let Hook = require('proton-hook')
+let Quark = require('proton-quark')
 let uriBuilder = require('mongo-uri-builder')
 
-module.exports = class MongooseHook extends Hook {
+module.exports = class MongooseQuark extends Quark {
 
   constructor(proton) {
     super(proton)

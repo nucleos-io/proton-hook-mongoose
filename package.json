@@ -1,5 +1,5 @@
 {
-  "name": "proton-hook-mongoose",
+  "name": "proton-quark-mongoose",
   "version": "1.0.1",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,6 @@
     "lodash": "^4.0.1",
     "mongo-uri-builder": "^1.0.3",
     "mongoose": "^4.3.7",
-    "proton-hook": "^1.0.1"
+    "proton-quark": "^1.0.1"
   }
 }
