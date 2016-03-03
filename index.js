@@ -1,36 +1,49 @@
 'use strict'
 
-let mongoose = require('mongoose')
-let _ = require('lodash')
-let Quark = require('proton-quark')
-let uriBuilder = require('mongo-uri-builder')
+const mongoose = require('mongoose')
+const _ = require('lodash')
+const Quark = require('proton-quark')
+const uriBuilder = require('mongo-uri-builder')
 
-module.exports = class MongooseQuark extends Quark {
+class MongooseQuark extends Quark {
 
   constructor(proton) {
     super(proton)
-  }
-
-  configure() {
-    this.proton.app.config.database.orm = 'mongoose'
+    this.odm = 'mongoose'
   }
 
   initialize() {
-    _.forEach(this.stores, store => this._buildModels(store.models, store.mongoose))
-  }
-
-  get stores() {
-    let stores = this.proton.app.config.database.stores
-    return _.mapValues(stores, (store, name) => {
-      return {
-        mongoose: mongoose.connect(uriBuilder(store.connection)),
-        models: this._getModels(name)
-      }
+    _.mapValues(this.mongooseStores, (store, name) => {
+      const models = this._getModels(name)
+      const uri = uriBuilder(store.connection)
+      this._buildModels(models, uri)
     })
   }
 
-  _buildModels(models, mongoose) {
-    _.forEach(models, model => model.build(mongoose))
+  get mongooseStores() {
+    const criteria = {
+      adapter: this.odm
+    }
+    return _.pickBy(this.proton.app.config.database.stores, criteria)
+  }
+
+  /**
+   * @method buildModels
+   * @description
+   * @todo: validate the mongoose connection
+   * @return
+   */
+  _buildModels(models, uri) {
+    _.forEach(models, model => {
+      mongoose.connect(uri)
+      const instanceModel = model.build(mongoose)
+      model.expose(instanceModel)
+      this._addModelToApp(model, instanceModel)
+    })
+  }
+
+  _addModelToApp(model, instance) {
+    this.proton.app.models[model.name] = instance
   }
 
   _getModels(name) {
@@ -41,3 +54,5 @@ module.exports = class MongooseQuark extends Quark {
   }
 
 }
+
+module.exports = MongooseQuark
