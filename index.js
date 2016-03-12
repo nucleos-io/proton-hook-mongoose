@@ -38,7 +38,7 @@ class MongooseQuark extends Quark {
       mongoose.connect(uri)
       const instanceModel = model.build(mongoose)
       model.expose(instanceModel)
-      this._addModelToApp(model, instanceModel)
+      //this._addModelToApp(model, instanceModel)
     })
   }
 
