@@ -18,6 +18,7 @@ class MongooseQuark extends Quark {
       const uri = uriBuilder(store.connection)
       this._buildModels(models, uri)
     })
+    this._expose()
   }
 
   get mongooseStores() {
@@ -51,6 +52,10 @@ class MongooseQuark extends Quark {
       store: name
     }
     return _.pickBy(this.proton.app.models, criteria)
+  }
+
+  _expose() {
+    global.mongoose = mongoose
   }
 
 }
