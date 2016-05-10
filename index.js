@@ -12,52 +12,47 @@ class MongooseQuark extends Quark {
     this.odm = 'mongoose'
   }
 
+  /**
+   *
+   *
+   */
   initialize() {
-    _.mapValues(this.mongooseStores, (store, name) => {
+    _.mapValues(this._mongooseStores, (store, name) => {
       const models = this._getModels(name)
       const uri = uriBuilder(store.connection)
       this._buildModels(models, uri)
     })
-    this._expose()
-  }
-
-  get mongooseStores() {
-    const criteria = {
-      adapter: this.odm
-    }
-    return _.pickBy(this.proton.app.config.database.stores, criteria)
   }
 
   /**
-   * @method buildModels
-   * @description
+   *
    * @todo: validate the mongoose connection
-   * @return
    */
   _buildModels(models, uri) {
     mongoose.connect(uri)
     _.forEach(models, model => {
-      const instanceModel = model.build(mongoose)
-      model.expose(instanceModel)
-      //this._addModelToApp(model, instanceModel)
+      const instance = model.build(mongoose)
+      this.proton.app.models[model.name] = instance
     })
   }
 
-  _addModelToApp(model, instance) {
-    this.proton.app.models[model.name] = instance
-  }
-
+  /**
+   *
+   *
+   */
   _getModels(name) {
-    let criteria = {
-      store: name
-    }
+    const criteria = { store: name }
     return _.pickBy(this.proton.app.models, criteria)
   }
 
-  _expose() {
-    global.mongoose = mongoose
+  /**
+   *
+   *
+   */
+  get _mongooseStores() {
+    const criteria = { adapter: this.odm }
+    return _.pickBy(this.proton.app.config.database.stores, criteria)
   }
-
 }
 
 module.exports = MongooseQuark
