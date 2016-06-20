@@ -32,8 +32,10 @@ class MongooseQuark extends Quark {
     mongoose.connect(uri)
     _.forEach(models, model => {
       const instance = model.build(mongoose)
-      this.proton.app.models[model.name] = instance
-      global[model.name] = instance
+      const modelName = _.clone(model.name)
+      this.proton.app.models[modelName] = instance
+      global[modelName] = instance
+      model.name = model.name + 'Model'
     })
   }
 
