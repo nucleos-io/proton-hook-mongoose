@@ -29,7 +29,8 @@ class MongooseQuark extends Quark {
    * @todo: validate the mongoose connection
    */
   _buildModels(models, uri) {
-    mongoose.connect(uri)
+    const options = { promiseLibrary: global.Promise }
+    mongoose.connect(uri, options)
     _.forEach(models, model => {
       const instance = model.build(mongoose)
       const modelName = _.clone(model.name)
