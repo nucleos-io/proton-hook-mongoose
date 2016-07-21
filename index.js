@@ -19,7 +19,7 @@ class MongooseQuark extends Quark {
   initialize() {
     _.mapValues(this._mongooseStores, (store, name) => {
       const models = this._getModels(name)
-      const uri = uriBuilder(store.connection)
+      const uri = store.connection.uri || uriBuilder(store.connection)
       this._buildModels(models, uri)
     })
   }
