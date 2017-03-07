@@ -4,14 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -R spec ./test/*.js",
+    "start": "node index.js"
   },
   "author": "Nucleos",
   "license": "ISC",
   "dependencies": {
+    "chai": "^3.5.0",
     "lodash": "^4.0.1",
     "mongo-uri-builder": "^1.0.3",
     "mongoose": "4.8.6",
+    "proton-mongoose-model": "^1.2.9",
     "proton-quark": "^1.0.1"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": ">= 0.0.1"
   }
 }

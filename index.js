@@ -12,10 +12,6 @@ class MongooseQuark extends Quark {
     this.odm = 'mongoose'
   }
 
-  /**
-   *
-   *
-   */
   initialize() {
     _.mapValues(this._mongooseStores, (store, name) => {
       const models = this._getModels(name)
@@ -24,34 +20,20 @@ class MongooseQuark extends Quark {
     })
   }
 
-  /**
-   *
-   * @todo: validate the mongoose connection
-   */
   _buildModels(models, uri) {
-    const options = { promiseLibrary: global.Promise }
-    const db = mongoose.createConnection(uri, options)
+    mongoose.createConnection(uri, { promiseLibrary: global.Promise })
     _.forEach(models, model => {
-      const instance = model.build(db)
-      const modelName = _.clone(model.name)
+      const instance = model.build(mongoose)
       this.proton.app.models[model.name] = instance
       global[model.name] = instance
     })
   }
 
-  /**
-   *
-   *
-   */
   _getModels(name) {
     const criteria = { store: name }
     return _.pickBy(this.proton.app.models, criteria)
   }
 
-  /**
-   *
-   *
-   */
   get _mongooseStores() {
     const criteria = { adapter: this.odm }
     return _.pickBy(this.proton.app.config.database.stores, criteria)
