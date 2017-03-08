@@ -1,6 +1,5 @@
 'use strict'
 
-const mongoose = require('mongoose')
 const _ = require('lodash')
 const Quark = require('proton-quark')
 const uriBuilder = require('mongo-uri-builder')
@@ -21,11 +20,12 @@ class MongooseQuark extends Quark {
   }
 
   _buildModels(models, uri) {
-    mongoose.createConnection(uri, { promiseLibrary: global.Promise })
+    const mongoose = require('mongoose')
+    mongoose.connect(uri, { promiseLibrary: global.Promise })
     _.forEach(models, model => {
       const instance = model.build(mongoose)
       this.proton.app.models[model.name] = instance
-      global[model.name] = instance
+      global[model.name] = this.proton.app.models[model.name]
     })
   }
 
