@@ -1,45 +1,35 @@
 const Quark = require('../')
 const chai = require('chai')
-const TestClass = require('./TestClass')
+const TestModel = require('./TestModel')
+const Proton = require('proton-koa')
 const expect = chai.expect
 
-
-const stores = {
-  mongo: {
-    connection: { uri: 'mongodb://localhost:27017' },
-    adapter: 'mongoose'
-  }
-}
-
-const proton = {
-  app: {
-    config: { database: { stores, store: 'mongo' } }
-  }
-}
-
-global.proton = proton
+global.proton = new Proton()
 
 describe('Quark mongoose test',  () => {
 
-  it('should initialize the test', done => {
-    proton.app.models =  { TestClass: new TestClass(proton) }
+  before(() => {
+    const connection = { uri: 'mongodb://localhost:27017' }
+    const adapter = 'mongoose'
+    proton.app = {
+      models: { 'Test': new TestModel(proton) },
+      config: {
+        database: {
+          stores: { mongo: { connection, adapter } },
+          store: 'mongo' // the default DB storage
+        }
+      }
+    }
+  })
+
+  it('Should instantiate the quark', done => {
     const quark = new Quark(proton)
-    quark.initialize()
-    done()
+    quark.initialize().then(done)
+    proton.emit('quark:proton-quark-models:init')
   })
 
-  it('Test should exist', done => {
-    expect(Test).to.not.be.undefined
-    done()
+  it('Should use with no errors the Test model', done => {
+    Test.find().then(() => done())
   })
-
-  it('Test find', done => {
-    Test.find()
-      .then(() => done())
-      .catch(err => {
-        console.log(err)
-      })
-  })
-
 
 })

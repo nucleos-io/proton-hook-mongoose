@@ -12,12 +12,18 @@ class MongooseQuark extends Quark {
   }
 
   initialize() {
-    _.mapValues(this._mongooseStores, (store, name) => {
-      const models = this._getModels(name)
-      const uri = store.connection.uri || uriBuilder(store.connection)
-      this._buildModels(models, uri)
+    return new Promise(resolve => {
+      this.after('quark:proton-quark-models:init', () => {
+        _.mapValues(this._mongooseStores, (store, name) => {
+          const models = this._getModels(name)
+          const uri = store.connection.uri || uriBuilder(store.connection)
+          this._buildModels(models, uri)
+        })
+        resolve()
+      })
     })
   }
+
 
   _buildModels(models, uri) {
     const mongoose = require('mongoose')
