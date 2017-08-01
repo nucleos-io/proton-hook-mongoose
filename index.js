@@ -3,6 +3,8 @@
 const _ = require('lodash')
 const Quark = require('proton-quark')
 const uriBuilder = require('mongo-uri-builder')
+const mongoose = require('mongoose')
+const connectionOptions = { promiseLibrary: global.Promise }
 
 class MongooseQuark extends Quark {
 
@@ -20,12 +22,13 @@ class MongooseQuark extends Quark {
   }
 
   _buildModels(models, uri) {
-    const mongoose = require('mongoose')
-    mongoose.connect(uri, { promiseLibrary: global.Promise })
+    const connection = mongoose.createConnection(uri, connectionOptions)
+    console.log('model func', connection.model);
     _.forEach(models, model => {
-      const instance = model.build(mongoose)
-      this.proton.app.models[model.name] = instance
-      global[model.name] = this.proton.app.models[model.name]
+      const instance = model.build(connection)
+      const name = model.name
+      this.proton.app.models[name] = instance
+      global[name] = instance
     })
   }
 
